@@ -39,6 +39,48 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: chat_messages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.chat_messages (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    job_application_id uuid NOT NULL,
+    sender_id uuid NOT NULL,
+    content text NOT NULL,
+    is_read boolean DEFAULT false,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+--
+-- Name: job_applications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.job_applications (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    job_posting_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    status public.job_application_status DEFAULT 'pending'::public.job_application_status NOT NULL
+);
+
+
+--
+-- Name: job_postings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.job_postings (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    project_id uuid NOT NULL,
+    title character varying(255) NOT NULL,
+    description text,
+    status public.job_posting_status DEFAULT 'draft'::public.job_posting_status NOT NULL,
+    deadline timestamp with time zone,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+--
 -- Name: project_contributors; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -68,11 +110,39 @@ CREATE TABLE public.projects (
 
 
 --
+-- Name: required_skills; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.required_skills (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    job_posting_id uuid NOT NULL,
+    name character varying(255) NOT NULL,
+    level character varying(50),
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.schema_migrations (
     version character varying(128) NOT NULL
+);
+
+
+--
+-- Name: user_skills; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_skills (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    name character varying(255) NOT NULL,
+    level character varying(50),
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -88,6 +158,38 @@ CREATE TABLE public.users (
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
+
+
+--
+-- Name: chat_messages chat_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.chat_messages
+    ADD CONSTRAINT chat_messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: job_applications job_applications_job_posting_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.job_applications
+    ADD CONSTRAINT job_applications_job_posting_id_user_id_key UNIQUE (job_posting_id, user_id);
+
+
+--
+-- Name: job_applications job_applications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.job_applications
+    ADD CONSTRAINT job_applications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: job_postings job_postings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.job_postings
+    ADD CONSTRAINT job_postings_pkey PRIMARY KEY (id);
 
 
 --
@@ -115,11 +217,27 @@ ALTER TABLE ONLY public.projects
 
 
 --
+-- Name: required_skills required_skills_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.required_skills
+    ADD CONSTRAINT required_skills_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: user_skills user_skills_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_skills
+    ADD CONSTRAINT user_skills_pkey PRIMARY KEY (id);
 
 
 --
@@ -139,6 +257,46 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: chat_messages chat_messages_job_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.chat_messages
+    ADD CONSTRAINT chat_messages_job_application_id_fkey FOREIGN KEY (job_application_id) REFERENCES public.job_applications(id) ON DELETE CASCADE;
+
+
+--
+-- Name: chat_messages chat_messages_sender_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.chat_messages
+    ADD CONSTRAINT chat_messages_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES public.users(id);
+
+
+--
+-- Name: job_applications job_applications_job_posting_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.job_applications
+    ADD CONSTRAINT job_applications_job_posting_id_fkey FOREIGN KEY (job_posting_id) REFERENCES public.job_postings(id) ON DELETE CASCADE;
+
+
+--
+-- Name: job_applications job_applications_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.job_applications
+    ADD CONSTRAINT job_applications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: job_postings job_postings_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.job_postings
+    ADD CONSTRAINT job_postings_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
+
+
+--
 -- Name: project_contributors project_contributors_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -152,6 +310,22 @@ ALTER TABLE ONLY public.project_contributors
 
 ALTER TABLE ONLY public.project_contributors
     ADD CONSTRAINT project_contributors_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: required_skills required_skills_job_posting_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.required_skills
+    ADD CONSTRAINT required_skills_job_posting_id_fkey FOREIGN KEY (job_posting_id) REFERENCES public.job_postings(id) ON DELETE CASCADE;
+
+
+--
+-- Name: user_skills user_skills_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_skills
+    ADD CONSTRAINT user_skills_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
