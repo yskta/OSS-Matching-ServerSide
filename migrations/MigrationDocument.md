@@ -1,0 +1,12 @@
+### DB関連
+  - DBマイグレーションツール: [dbmate](https://github.com/amacneil/dbmate)
+      - OSS-Matching-ServerSideのルートディレクトリにて
+      - `dbmate new <ファイル名>` : マイグレーションファイルを追加
+        - `migrations`ディレクトリにマイグレーションファイルが作成される
+      - `dbmate up` : マイグレーションを最新まで実行
+      - `dbmate down` : マイグレーション1つロールバック
+      - `dbmate status` : マイグレーションステータス確認
+  - DBの中身を確認
+      - `docker compose exec db psql -U postgres -d oss_matching` : PostgreSQLコンテナに接続
+      - `\dt`：テーブル一覧表示
+      - `\d users`: 特定のテーブルの詳細な構造確認
