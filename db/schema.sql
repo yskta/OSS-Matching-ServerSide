@@ -43,7 +43,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.chat_messages (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid NOT NULL,
     job_application_id uuid NOT NULL,
     sender_id uuid NOT NULL,
     content text NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE public.chat_messages (
 --
 
 CREATE TABLE public.job_applications (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid NOT NULL,
     job_posting_id uuid NOT NULL,
     user_id uuid NOT NULL,
     status public.job_application_status DEFAULT 'pending'::public.job_application_status NOT NULL
@@ -69,7 +69,7 @@ CREATE TABLE public.job_applications (
 --
 
 CREATE TABLE public.job_postings (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid NOT NULL,
     project_id uuid NOT NULL,
     title character varying(255) NOT NULL,
     description text,
@@ -99,7 +99,7 @@ CREATE TABLE public.project_contributors (
 --
 
 CREATE TABLE public.projects (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid NOT NULL,
     github_repo_id character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
     description text,
@@ -114,7 +114,7 @@ CREATE TABLE public.projects (
 --
 
 CREATE TABLE public.required_skills (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid NOT NULL,
     job_posting_id uuid NOT NULL,
     name character varying(255) NOT NULL,
     level character varying(50),
@@ -137,7 +137,7 @@ CREATE TABLE public.schema_migrations (
 --
 
 CREATE TABLE public.user_skills (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid NOT NULL,
     user_id uuid NOT NULL,
     name character varying(255) NOT NULL,
     level character varying(50),
@@ -151,7 +151,7 @@ CREATE TABLE public.user_skills (
 --
 
 CREATE TABLE public.users (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid NOT NULL,
     github_id character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,

@@ -15,7 +15,7 @@ CREATE TYPE job_application_status AS ENUM (
 );
 
 CREATE TABLE users(
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     github_id VARCHAR(255) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE users(
 );
 
 CREATE TABLE projects(
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     github_repo_id VARCHAR(255) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -46,7 +46,7 @@ CREATE TABLE project_contributors(
 );
 
 CREATE TABLE job_postings(
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     project_id UUID NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -58,7 +58,7 @@ CREATE TABLE job_postings(
 );
 
 CREATE TABLE job_applications(
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     job_posting_id UUID NOT NULL,
     user_id UUID NOT NULL,
     status job_application_status NOT NULL DEFAULT 'pending',
@@ -68,7 +68,7 @@ CREATE TABLE job_applications(
 );
 
 CREATE TABLE chat_messages (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     job_application_id UUID NOT NULL,
     sender_id UUID NOT NULL,
     content TEXT NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE chat_messages (
 );
 
 CREATE TABLE required_skills (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     job_posting_id UUID NOT NULL,
     name VARCHAR(255) NOT NULL,
     level VARCHAR(50),
@@ -89,7 +89,7 @@ CREATE TABLE required_skills (
 );
 
 CREATE TABLE user_skills (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     name VARCHAR(255) NOT NULL,
     level VARCHAR(50),
