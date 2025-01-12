@@ -6,7 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -48,7 +48,7 @@ func (s *projectContributorService) Create(projectID, userID uuid.UUID, role str
 	return createdContributor, nil
 }
 
-func (s *projectContributorService) Get(projectID, userID string) (*model.ProjectContributor, error) {
+func (s *projectContributorService) Get(projectID, userID uuid.UUID) (*model.ProjectContributor, error) {
 	contributor, err := s.repo.Get(s.db, projectID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get project contributor: %w", err)
@@ -57,7 +57,7 @@ func (s *projectContributorService) Get(projectID, userID string) (*model.Projec
 	return contributor, nil
 }
 
-func (s *projectContributorService) Update(projectID, userID, role string) (*model.ProjectContributor, error) {
+func (s *projectContributorService) Update(projectID, userID uuid.UUID, role string) (*model.ProjectContributor, error) {
 	existingContributor, err := s.repo.Get(s.db, projectID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get project contributor: %w", err)
@@ -72,7 +72,7 @@ func (s *projectContributorService) Update(projectID, userID, role string) (*mod
 	return existingContributor, nil
 }
 
-func (s *projectContributorService) Delete(projectID, userID string) error {
+func (s *projectContributorService) Delete(projectID, userID uuid.UUID) error {
 	if err := s.repo.Delete(s.db, projectID, userID); err != nil {
 		return fmt.Errorf("failed to delete project contributor: %w", err)
 	}

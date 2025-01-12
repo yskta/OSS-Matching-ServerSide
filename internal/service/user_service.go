@@ -11,9 +11,9 @@ import (
 
 type UserService interface {
 	Create(githubID, name, email string) (*model.User, error)
-	Get(id string) (*model.User, error)
-	Update(id, name, email string) (*model.User, error)
-	Delete(id string) error
+	Get(id uuid.UUID) (*model.User, error)
+	Update(id uuid.UUID, name, email string) (*model.User, error)
+	Delete(id uuid.UUID) error
 }
 
 type userService struct {
@@ -44,7 +44,7 @@ func (s *userService) Create(githubID string, name string, email string) (*model
 	return createdUser, nil
 }
 
-func (s *userService) Get(id string) (*model.User, error) {
+func (s *userService) Get(id uuid.UUID) (*model.User, error) {
 	user, err := s.repo.Get(s.db, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
@@ -53,7 +53,7 @@ func (s *userService) Get(id string) (*model.User, error) {
 	return user, nil
 }
 
-func (s *userService) Update(id, name, email string) (*model.User, error) {
+func (s *userService) Update(id uuid.UUID, name, email string) (*model.User, error) {
 	existingUser, err := s.repo.Get(s.db, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
@@ -69,7 +69,7 @@ func (s *userService) Update(id, name, email string) (*model.User, error) {
 	return existingUser, nil
 }
 
-func (s *userService) Delete(id string) error {
+func (s *userService) Delete(id uuid.UUID) error {
 	if err := s.repo.Delete(s.db, id); err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
 	}

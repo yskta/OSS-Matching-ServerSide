@@ -12,9 +12,9 @@ import (
 
 type ProjectService interface {
 	Create(githubRepoID, name, description string) (*model.Project, error)
-	Get(id string) (*model.Project, error)
-	Update(id, name, description string) (*model.Project, error)
-	Delete(id string) error
+	Get(id uuid.UUID) (*model.Project, error)
+	Update(id uuid.UUID, name, description string) (*model.Project, error)
+	Delete(id uuid.UUID) error
 }
 
 type projectService struct {
@@ -53,7 +53,7 @@ func (s *projectService) Create(githubRepoID, name, description string) (*model.
 	return createdProject, nil
 }
 
-func (s *projectService) Get(id string) (*model.Project, error) {
+func (s *projectService) Get(id uuid.UUID) (*model.Project, error) {
 	project, err := s.repo.Get(s.db, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get project: %w", err)
@@ -62,7 +62,7 @@ func (s *projectService) Get(id string) (*model.Project, error) {
 	return project, nil
 }
 
-func (s *projectService) Update(id, name, description string) (*model.Project, error) {
+func (s *projectService) Update(id uuid.UUID, name, description string) (*model.Project, error) {
 	existingProject, err := s.repo.Get(s.db, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get project: %w", err)
@@ -81,7 +81,7 @@ func (s *projectService) Update(id, name, description string) (*model.Project, e
 	return existingProject, nil
 }
 
-func (s *projectService) Delete(id string) error {
+func (s *projectService) Delete(id uuid.UUID) error {
 	if err := s.repo.Delete(s.db, id); err != nil {
 		return fmt.Errorf("failed to delete project: %w", err)
 	}
