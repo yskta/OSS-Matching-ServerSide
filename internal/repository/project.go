@@ -3,14 +3,15 @@ package repository
 import (
 	"OSS-Matching-ServerSide/internal/model"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type ProjectRepository interface {
 	Create(db *gorm.DB, project *model.Project) (*model.Project, error)
-	Get(db *gorm.DB, id string) (*model.Project, error)
+	Get(db *gorm.DB, id uuid.UUID) (*model.Project, error)
 	Update(db *gorm.DB, project *model.Project) error
-	Delete(db *gorm.DB, id string) error
+	Delete(db *gorm.DB, id uuid.UUID) error
 }
 
 type projectRepository struct{}
@@ -26,7 +27,7 @@ func (r *projectRepository) Create(db *gorm.DB, project *model.Project) (*model.
 	return project, nil
 }
 
-func (r *projectRepository) Get(db *gorm.DB, id string) (*model.Project, error) {
+func (r *projectRepository) Get(db *gorm.DB, id uuid.UUID) (*model.Project, error) {
 	var project model.Project
 	if err := db.First(&project, "id = ?", id).Error; err != nil {
 		return nil, err
@@ -38,6 +39,6 @@ func (r *projectRepository) Update(db *gorm.DB, project *model.Project) error {
 	return db.Save(project).Error
 }
 
-func (r *projectRepository) Delete(db *gorm.DB, id string) error {
+func (r *projectRepository) Delete(db *gorm.DB, id uuid.UUID) error {
 	return db.Delete(&model.Project{}, "id = ?", id).Error
 }

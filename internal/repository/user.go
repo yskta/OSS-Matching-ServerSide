@@ -3,15 +3,16 @@ package repository
 import (
 	"OSS-Matching-ServerSide/internal/model"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 // インターフェース定義
 type UserRepository interface {
 	Create(db *gorm.DB, user *model.User) (*model.User, error)
-	Get(db *gorm.DB, id string) (*model.User, error)
+	Get(db *gorm.DB, id uuid.UUID) (*model.User, error)
 	Update(db *gorm.DB, user *model.User) error
-	Delete(db *gorm.DB, id string) error
+	Delete(db *gorm.DB, id uuid.UUID) error
 }
 
 // 構造体と初期化
@@ -19,6 +20,10 @@ type UserRepository interface {
 type userRepository struct{}
 
 // NewUserRepository()はUserRepositoryインターフェースを実装した新しいインスタンスを返す
+// UserRepositoryインターフェースを実装した新しいインスタンスを作成するファクトリー関数です。
+// 戻り値の型がUserRepository（インターフェース）になっている点が重要
+// 実際には&userRepository{}（構造体のポインタ）を返すが、インターフェースとして扱える
+// これにより、呼び出し側は具体的な実装（userRepository構造体）を知る必要がなく、インターフェースを通じて操作できる
 func NewUserRepository() UserRepository {
 	return &userRepository{}
 }
@@ -39,7 +44,7 @@ func (r *userRepository) Create(db *gorm.DB, user *model.User) (*model.User, err
 	return user, nil
 }
 
-func (r *userRepository) Get(db *gorm.DB, id string) (*model.User, error) {
+func (r *userRepository) Get(db *gorm.DB, id uuid.UUID) (*model.User, error) {
 	var user model.User
 	if err := db.First(&user, "id = ?", id).Error; err != nil {
 		return nil, err
@@ -51,6 +56,6 @@ func (r *userRepository) Update(db *gorm.DB, user *model.User) error {
 	return db.Save(user).Error
 }
 
-func (r *userRepository) Delete(db *gorm.DB, id string) error {
+func (r *userRepository) Delete(db *gorm.DB, id uuid.UUID) error {
 	return db.Delete(&model.User{}, "id = ?", id).Error
 }
