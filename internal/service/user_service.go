@@ -5,6 +5,7 @@ import (
 	"OSS-Matching-ServerSide/internal/repository"
 	"fmt"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -29,6 +30,7 @@ func NewUserService(db *gorm.DB, repo repository.UserRepository) UserService {
 
 func (s *userService) Create(githubID string, name string, email string) (*model.User, error) {
 	newUser := &model.User{
+		ID:       uuid.New(),
 		GithubID: githubID,
 		Name:     name,
 		Email:    email,

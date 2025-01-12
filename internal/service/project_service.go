@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -30,6 +31,7 @@ func NewProjectService(db *gorm.DB, repo repository.ProjectRepository) ProjectSe
 
 func (s *projectService) Create(githubRepoID, name, description string) (*model.Project, error) {
 	newProject := &model.Project{
+		ID:           uuid.New(), // UUIDを生成
 		GithubRepoID: githubRepoID,
 		Name:         name,
 		Description: sql.NullString{
