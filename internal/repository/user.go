@@ -19,6 +19,10 @@ type UserRepository interface {
 type userRepository struct{}
 
 // NewUserRepository()はUserRepositoryインターフェースを実装した新しいインスタンスを返す
+// UserRepositoryインターフェースを実装した新しいインスタンスを作成するファクトリー関数です。
+// 戻り値の型がUserRepository（インターフェース）になっている点が重要
+// 実際には&userRepository{}（構造体のポインタ）を返すが、インターフェースとして扱える
+// これにより、呼び出し側は具体的な実装（userRepository構造体）を知る必要がなく、インターフェースを通じて操作できる
 func NewUserRepository() UserRepository {
 	return &userRepository{}
 }
