@@ -13,6 +13,10 @@ import (
 	"gorm.io/gorm"
 
 	"OSS-Matching-ServerSide/internal/config"
+	"OSS-Matching-ServerSide/internal/controller"
+	"OSS-Matching-ServerSide/internal/repository"
+	"OSS-Matching-ServerSide/internal/router"
+	"OSS-Matching-ServerSide/internal/service"
 )
 
 func main() {
@@ -47,8 +51,39 @@ func main() {
 
 	log.Println("Successfully connected to database")
 
+	// リポジトリの初期化
+	userRepo := repository.NewUserRepository()
+	projectRepo := repository.NewProjectRepository()
+	projectContributorRepo := repository.NewProjectContributorRepository()
+	jobPostingRepo := repository.NewJobPostingRepository()
+	jobApplicationRepo := repository.NewJobApplicationRepository()
+	chatMessageRepo := repository.NewChatMessageRepository()
+	requiredSkillRepo := repository.NewRequiredSkillRepository()
+	userSkillRepo := repository.NewUserSkillRepository()
+
+	// サービスの初期化
+	userService := service.NewUserService(db, userRepo)
+	projectService := service.NewProjectService(db, projectRepo)
+	projectContributorService := service.NewProjectContributorService(db, projectContributorRepo)
+	jobPostingService := service.NewJobPostingService(db, jobPostingRepo)
+	jobApplicationService := service.NewJobApplicationService(db, jobApplicationRepo)
+	chatMessageService := service.NewChatMessageService(db, chatMessageRepo)
+	requiredSkillService := service.NewRequiredSkillService(db, requiredSkillRepo)
+	userSkillService := service.NewUserSkillService(db, userSkillRepo)
+
+	// コントローラーの初期化
+	controllers := &router.Controllers{
+		User:               controller.NewUserController(userService),
+		Project:            controller.NewProjectController(projectService),
+		ProjectContributor: controller.NewProjectContributorController(projectContributorService),
+		JobPosting:         controller.NewJobPostingController(jobPostingService),
+		JobApplication:     controller.NewJobApplicationController(jobApplicationService),
+		ChatMessage:        controller.NewChatMessageController(chatMessageService),
+		RequiredSkill:      controller.NewRequiredSkillController(requiredSkillService),
+		UserSkill:          controller.NewUserSkillController(userSkillService),
+	}
 	// Echoインスタンスを作成
-	e := echo.New()
+	e := router.NewRouter(controllers)
 
 	// ミドルウェアの設定
 	e.Use(middleware.Logger())
