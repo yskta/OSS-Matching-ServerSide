@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -96,6 +97,8 @@ func main() {
 		})
 	})
 
+	// Swaggerの設定
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	//サーバー起動
 	e.Logger.Fatal(e.Start(":8080"))
 }
