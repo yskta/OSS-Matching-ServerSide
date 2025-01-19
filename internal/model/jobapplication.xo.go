@@ -4,6 +4,7 @@ package model
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -14,6 +15,8 @@ type JobApplication struct {
 	JobPostingID uuid.UUID            `json:"job_posting_id"` // job_posting_id
 	UserID       uuid.UUID            `json:"user_id"`        // user_id
 	Status       JobApplicationStatus `json:"status"`         // status
+	CreatedAt    sql.NullTime         `json:"created_at"`     // created_at
+	UpdatedAt    sql.NullTime         `json:"updated_at"`     // updated_at
 	// xo fields
 	_exists, _deleted bool
 }
@@ -39,13 +42,13 @@ func (ja *JobApplication) Insert(ctx context.Context, db DB) error {
 	}
 	// insert (manual)
 	const sqlstr = `INSERT INTO public.job_applications (` +
-		`id, job_posting_id, user_id, status` +
+		`id, job_posting_id, user_id, status, created_at, updated_at` +
 		`) VALUES (` +
-		`$1, $2, $3, $4` +
+		`$1, $2, $3, $4, $5, $6` +
 		`)`
 	// run
-	logf(sqlstr, ja.ID, ja.JobPostingID, ja.UserID, ja.Status)
-	if _, err := db.ExecContext(ctx, sqlstr, ja.ID, ja.JobPostingID, ja.UserID, ja.Status); err != nil {
+	logf(sqlstr, ja.ID, ja.JobPostingID, ja.UserID, ja.Status, ja.CreatedAt, ja.UpdatedAt)
+	if _, err := db.ExecContext(ctx, sqlstr, ja.ID, ja.JobPostingID, ja.UserID, ja.Status, ja.CreatedAt, ja.UpdatedAt); err != nil {
 		return logerror(err)
 	}
 	// set exists
@@ -63,11 +66,11 @@ func (ja *JobApplication) Update(ctx context.Context, db DB) error {
 	}
 	// update with composite primary key
 	const sqlstr = `UPDATE public.job_applications SET ` +
-		`job_posting_id = $1, user_id = $2, status = $3 ` +
-		`WHERE id = $4`
+		`job_posting_id = $1, user_id = $2, status = $3, created_at = $4, updated_at = $5 ` +
+		`WHERE id = $6`
 	// run
-	logf(sqlstr, ja.JobPostingID, ja.UserID, ja.Status, ja.ID)
-	if _, err := db.ExecContext(ctx, sqlstr, ja.JobPostingID, ja.UserID, ja.Status, ja.ID); err != nil {
+	logf(sqlstr, ja.JobPostingID, ja.UserID, ja.Status, ja.CreatedAt, ja.UpdatedAt, ja.ID)
+	if _, err := db.ExecContext(ctx, sqlstr, ja.JobPostingID, ja.UserID, ja.Status, ja.CreatedAt, ja.UpdatedAt, ja.ID); err != nil {
 		return logerror(err)
 	}
 	return nil
@@ -89,16 +92,16 @@ func (ja *JobApplication) Upsert(ctx context.Context, db DB) error {
 	}
 	// upsert
 	const sqlstr = `INSERT INTO public.job_applications (` +
-		`id, job_posting_id, user_id, status` +
+		`id, job_posting_id, user_id, status, created_at, updated_at` +
 		`) VALUES (` +
-		`$1, $2, $3, $4` +
+		`$1, $2, $3, $4, $5, $6` +
 		`)` +
 		` ON CONFLICT (id) DO ` +
 		`UPDATE SET ` +
-		`job_posting_id = EXCLUDED.job_posting_id, user_id = EXCLUDED.user_id, status = EXCLUDED.status `
+		`job_posting_id = EXCLUDED.job_posting_id, user_id = EXCLUDED.user_id, status = EXCLUDED.status, created_at = EXCLUDED.created_at, updated_at = EXCLUDED.updated_at `
 	// run
-	logf(sqlstr, ja.ID, ja.JobPostingID, ja.UserID, ja.Status)
-	if _, err := db.ExecContext(ctx, sqlstr, ja.ID, ja.JobPostingID, ja.UserID, ja.Status); err != nil {
+	logf(sqlstr, ja.ID, ja.JobPostingID, ja.UserID, ja.Status, ja.CreatedAt, ja.UpdatedAt)
+	if _, err := db.ExecContext(ctx, sqlstr, ja.ID, ja.JobPostingID, ja.UserID, ja.Status, ja.CreatedAt, ja.UpdatedAt); err != nil {
 		return logerror(err)
 	}
 	// set exists
@@ -133,7 +136,7 @@ func (ja *JobApplication) Delete(ctx context.Context, db DB) error {
 func JobApplicationByJobPostingIDUserID(ctx context.Context, db DB, jobPostingID, userID uuid.UUID) (*JobApplication, error) {
 	// query
 	const sqlstr = `SELECT ` +
-		`id, job_posting_id, user_id, status ` +
+		`id, job_posting_id, user_id, status, created_at, updated_at ` +
 		`FROM public.job_applications ` +
 		`WHERE job_posting_id = $1 AND user_id = $2`
 	// run
@@ -141,7 +144,7 @@ func JobApplicationByJobPostingIDUserID(ctx context.Context, db DB, jobPostingID
 	ja := JobApplication{
 		_exists: true,
 	}
-	if err := db.QueryRowContext(ctx, sqlstr, jobPostingID, userID).Scan(&ja.ID, &ja.JobPostingID, &ja.UserID, &ja.Status); err != nil {
+	if err := db.QueryRowContext(ctx, sqlstr, jobPostingID, userID).Scan(&ja.ID, &ja.JobPostingID, &ja.UserID, &ja.Status, &ja.CreatedAt, &ja.UpdatedAt); err != nil {
 		return nil, logerror(err)
 	}
 	return &ja, nil
@@ -153,7 +156,7 @@ func JobApplicationByJobPostingIDUserID(ctx context.Context, db DB, jobPostingID
 func JobApplicationByID(ctx context.Context, db DB, id uuid.UUID) (*JobApplication, error) {
 	// query
 	const sqlstr = `SELECT ` +
-		`id, job_posting_id, user_id, status ` +
+		`id, job_posting_id, user_id, status, created_at, updated_at ` +
 		`FROM public.job_applications ` +
 		`WHERE id = $1`
 	// run
@@ -161,7 +164,7 @@ func JobApplicationByID(ctx context.Context, db DB, id uuid.UUID) (*JobApplicati
 	ja := JobApplication{
 		_exists: true,
 	}
-	if err := db.QueryRowContext(ctx, sqlstr, id).Scan(&ja.ID, &ja.JobPostingID, &ja.UserID, &ja.Status); err != nil {
+	if err := db.QueryRowContext(ctx, sqlstr, id).Scan(&ja.ID, &ja.JobPostingID, &ja.UserID, &ja.Status, &ja.CreatedAt, &ja.UpdatedAt); err != nil {
 		return nil, logerror(err)
 	}
 	return &ja, nil

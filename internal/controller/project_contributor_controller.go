@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"OSS-Matching-ServerSide/internal/controller/dto"
 	"OSS-Matching-ServerSide/internal/service"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,14 +18,8 @@ func NewProjectContributorController(pcs service.ProjectContributorService) *Pro
 	}
 }
 
-type CreateProjectContributorRequest struct {
-	ProjectID uuid.UUID `json:"project_id" validate:"required"`
-	UserID    uuid.UUID `json:"user_id" validate:"required"`
-	Role      string    `json:"role" validate:"required"`
-}
-
 func (c *ProjectContributorController) Create(ctx echo.Context) error {
-	req := new(CreateProjectContributorRequest)
+	req := new(dto.CreateProjectContributorRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -34,6 +28,16 @@ func (c *ProjectContributorController) Create(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	
-	return ctx.JSON(http.StatusCreated, contributor)
+
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.ProjectContributorResponse{
+		ProjectID:           contributor.ProjectID.String(),
+		UserID:              contributor.UserID.String(),
+		Role:                contributor.Role,
+		CanManageJobPosting: contributor.CanManageJobPosting.Bool,
+		CreatedAt:           contributor.CreatedAt.Time,
+		UpdatedAt:           contributor.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

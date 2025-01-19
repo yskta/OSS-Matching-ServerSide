@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"OSS-Matching-ServerSide/internal/controller/dto"
 	"OSS-Matching-ServerSide/internal/service"
 	"net/http"
 
@@ -18,20 +19,8 @@ func NewUserController(us service.UserService) *UserController {
 	}
 }
 
-// リクエスト構造体
-type CreateUserRequest struct {
-	GithubID string `json:"github_id" validate:"required"`
-	Name     string `json:"name" validate:"required"`
-	Email    string `json:"email" validate:"required,email"`
-}
-
-type UpdateUserRequest struct {
-	Name  string `json:"name" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
-}
-
 func (c *UserController) Create(ctx echo.Context) error {
-	req := new(CreateUserRequest)
+	req := new(dto.CreateUserRequest)
 	// リクエストボディのJSONをGo構造体にマッピング
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -41,7 +30,18 @@ func (c *UserController) Create(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusCreated, user)
+
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.UserResponse{
+		ID:        user.ID.String(),
+		GithubID:  user.GithubID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt.Time,
+		UpdatedAt: user.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }
 
 func (c *UserController) Get(ctx echo.Context) error {
@@ -56,7 +56,17 @@ func (c *UserController) Get(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, user)
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.UserResponse{
+		ID:        user.ID.String(),
+		GithubID:  user.GithubID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt.Time,
+		UpdatedAt: user.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusOK, response)
 }
 
 func (c *UserController) Update(ctx echo.Context) error {
@@ -66,7 +76,7 @@ func (c *UserController) Update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid id format")
 	}
 
-	req := new(UpdateUserRequest)
+	req := new(dto.UpdateUserRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -76,7 +86,17 @@ func (c *UserController) Update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, user)
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.UserResponse{
+		ID:        user.ID.String(),
+		GithubID:  user.GithubID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt.Time,
+		UpdatedAt: user.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusOK, response)
 }
 
 func (c *UserController) Delete(ctx echo.Context) error {

@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"OSS-Matching-ServerSide/internal/controller/dto"
 	"OSS-Matching-ServerSide/internal/service"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,14 +18,8 @@ func NewChatMessageController(cms service.ChatMessageService) *ChatMessageContro
 	}
 }
 
-type CreateChatMessageRequest struct {
-	JobApplicationID uuid.UUID `json:"job_application_id" validate:"required"`
-	SenderID         uuid.UUID `json:"sender_id" validate:"required"`
-	Content          string    `json:"content" validate:"required"`
-}
-
 func (c *ChatMessageController) Create(ctx echo.Context) error {
-	req := new(CreateChatMessageRequest)
+	req := new(dto.CreateChatMessageRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -35,5 +29,13 @@ func (c *ChatMessageController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, message)
+	response := &dto.ChatMessageResponse{
+		ID:               message.ID.String(),
+		JobApplicationID: message.JobApplicationID.String(),
+		SenderID:         message.SenderID.String(),
+		Content:          message.Content,
+		CreatedAt:        message.CreatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"OSS-Matching-ServerSide/internal/controller/dto"
 	"OSS-Matching-ServerSide/internal/service"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,13 +18,8 @@ func NewJobApplicationController(jas service.JobApplicationService) *JobApplicat
 	}
 }
 
-type CreateJobApplicationRequest struct {
-	JobPostingID uuid.UUID `json:"job_posting_id" validate:"required"`
-	UserID       uuid.UUID `json:"user_id" validate:"required"`
-}
-
 func (c *JobApplicationController) Create(ctx echo.Context) error {
-	req := new(CreateJobApplicationRequest)
+	req := new(dto.CreateJobApplicationRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -34,5 +29,14 @@ func (c *JobApplicationController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, application)
+	response := &dto.JobApplicationResponse{
+		ID:           application.ID.String(),
+		JobPostingID: application.JobPostingID.String(),
+		UserID:       application.UserID.String(),
+		Status:       application.Status.String(),
+		CreatedAt:    application.CreatedAt.Time,
+		UpdatedAt:    application.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

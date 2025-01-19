@@ -1,11 +1,10 @@
 package controller
 
 import (
+	"OSS-Matching-ServerSide/internal/controller/dto"
 	"OSS-Matching-ServerSide/internal/service"
 	"net/http"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -19,16 +18,8 @@ func NewJobPostingController(jps service.JobPostingService) *JobPostingControlle
 	}
 }
 
-type CreateJobPostingRequest struct {
-	ProjectID   uuid.UUID `json:"project_id" validate:"required"`
-	Title       string    `json:"title" validate:"required"`
-	Description string    `json:"description"`
-	Status      string    `json:"status" validate:"required"`
-	Deadline    time.Time `json:"deadline"`
-}
-
 func (c *JobPostingController) Create(ctx echo.Context) error {
-	req := new(CreateJobPostingRequest)
+	req := new(dto.CreateJobPostingRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -38,5 +29,16 @@ func (c *JobPostingController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, posting)
+	response := &dto.JobPostingResponse{
+		ID:          posting.ID.String(),
+		ProjectID:   posting.ProjectID.String(),
+		Title:       posting.Title,
+		Description: posting.Description.String,
+		Status:      posting.Status.String(),
+		Deadline:    posting.Deadline.Time,
+		CreatedAt:   posting.CreatedAt.Time,
+		UpdatedAt:   posting.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

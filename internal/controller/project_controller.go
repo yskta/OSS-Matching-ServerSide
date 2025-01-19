@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"OSS-Matching-ServerSide/internal/controller/dto"
 	"OSS-Matching-ServerSide/internal/service"
 	"net/http"
 
@@ -18,19 +19,8 @@ func NewProjectController(ps service.ProjectService) *ProjectController {
 	}
 }
 
-type CreateProjectRequest struct {
-	GithubRepoID string `json:"github_repo_id" validate:"required"`
-	Name         string `json:"name" validate:"required"`
-	Description  string `json:"description"`
-}
-
-type UpdateProjectRequest struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
-}
-
 func (c *ProjectController) Create(ctx echo.Context) error {
-	req := new(CreateProjectRequest)
+	req := new(dto.CreateProjectRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -39,7 +29,18 @@ func (c *ProjectController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, project)
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.ProjectResponse{
+		ID:           project.ID.String(),
+		GithubRepoID: project.GithubRepoID,
+		Name:         project.Name,
+		Description:  project.Description.String,
+		IsActive:     project.IsActive.Bool,
+		CreatedAt:    project.CreatedAt.Time,
+		UpdatedAt:    project.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }
 
 func (c *ProjectController) Get(ctx echo.Context) error {
@@ -53,7 +54,18 @@ func (c *ProjectController) Get(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, project)
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.ProjectResponse{
+		ID:           project.ID.String(),
+		GithubRepoID: project.GithubRepoID,
+		Name:         project.Name,
+		Description:  project.Description.String,
+		IsActive:     project.IsActive.Bool,
+		CreatedAt:    project.CreatedAt.Time,
+		UpdatedAt:    project.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusOK, response)
 }
 
 func (c *ProjectController) Update(ctx echo.Context) error {
@@ -62,7 +74,7 @@ func (c *ProjectController) Update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid id format")
 	}
 
-	req := new(UpdateProjectRequest)
+	req := new(dto.UpdateProjectRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -72,7 +84,18 @@ func (c *ProjectController) Update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, project)
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.ProjectResponse{
+		ID:           project.ID.String(),
+		GithubRepoID: project.GithubRepoID,
+		Name:         project.Name,
+		Description:  project.Description.String,
+		IsActive:     project.IsActive.Bool,
+		CreatedAt:    project.CreatedAt.Time,
+		UpdatedAt:    project.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusOK, response)
 }
 
 func (c *ProjectController) Delete(ctx echo.Context) error {
