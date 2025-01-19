@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"OSS-Matching-ServerSide/internal/controller/dto"
 	"OSS-Matching-ServerSide/internal/service"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,14 +18,8 @@ func NewRequiredSkillController(rss service.RequiredSkillService) *RequiredSkill
 	}
 }
 
-type CreateRequiredSkillRequest struct {
-	JobPostingID uuid.UUID `json:"job_posting_id" validate:"required"`
-	Name         string    `json:"name" validate:"required"`
-	Level        string    `json:"level"`
-}
-
 func (c *RequiredSkillController) Create(ctx echo.Context) error {
-	req := new(CreateRequiredSkillRequest)
+	req := new(dto.CreateRequiredSkillRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

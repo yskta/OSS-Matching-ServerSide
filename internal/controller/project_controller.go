@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"OSS-Matching-ServerSide/internal/controller/dto"
 	"OSS-Matching-ServerSide/internal/service"
 	"net/http"
 
@@ -18,19 +19,8 @@ func NewProjectController(ps service.ProjectService) *ProjectController {
 	}
 }
 
-type CreateProjectRequest struct {
-	GithubRepoID string `json:"github_repo_id" validate:"required"`
-	Name         string `json:"name" validate:"required"`
-	Description  string `json:"description"`
-}
-
-type UpdateProjectRequest struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
-}
-
 func (c *ProjectController) Create(ctx echo.Context) error {
-	req := new(CreateProjectRequest)
+	req := new(dto.CreateProjectRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -62,7 +52,7 @@ func (c *ProjectController) Update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid id format")
 	}
 
-	req := new(UpdateProjectRequest)
+	req := new(dto.UpdateProjectRequest)
 	if err := ctx.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
