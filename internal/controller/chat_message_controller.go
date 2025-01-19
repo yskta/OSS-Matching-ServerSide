@@ -29,5 +29,13 @@ func (c *ChatMessageController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, message)
+	response := &dto.ChatMessageResponse{
+		ID:               message.ID.String(),
+		JobApplicationID: message.JobApplicationID.String(),
+		SenderID:         message.SenderID.String(),
+		Content:          message.Content,
+		CreatedAt:        message.CreatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

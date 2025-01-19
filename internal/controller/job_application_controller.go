@@ -29,5 +29,14 @@ func (c *JobApplicationController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, application)
+	response := &dto.JobApplicationResponse{
+		ID:           application.ID.String(),
+		JobPostingID: application.JobPostingID.String(),
+		UserID:       application.UserID.String(),
+		Status:       application.Status.String(),
+		CreatedAt:    application.CreatedAt.Time,
+		UpdatedAt:    application.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

@@ -60,7 +60,9 @@ CREATE TABLE public.job_applications (
     id uuid NOT NULL,
     job_posting_id uuid NOT NULL,
     user_id uuid NOT NULL,
-    status public.job_application_status DEFAULT 'pending'::public.job_application_status NOT NULL
+    status public.job_application_status DEFAULT 'pending'::public.job_application_status NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 

@@ -28,5 +28,15 @@ func (c *UserSkillController) Create(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusCreated, skill)
+
+	response := &dto.UserSkillResponse{
+		ID:        skill.ID.String(),
+		UserID:    skill.UserID.String(),
+		Name:      skill.Name,
+		Level:     skill.Level.String,
+		CreatedAt: skill.CreatedAt.Time,
+		UpdatedAt: skill.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

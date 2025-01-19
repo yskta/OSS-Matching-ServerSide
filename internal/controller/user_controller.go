@@ -56,7 +56,17 @@ func (c *UserController) Get(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, user)
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.UserResponse{
+		ID:        user.ID.String(),
+		GithubID:  user.GithubID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt.Time,
+		UpdatedAt: user.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusOK, response)
 }
 
 func (c *UserController) Update(ctx echo.Context) error {
@@ -76,7 +86,17 @@ func (c *UserController) Update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, user)
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.UserResponse{
+		ID:        user.ID.String(),
+		GithubID:  user.GithubID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt.Time,
+		UpdatedAt: user.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusOK, response)
 }
 
 func (c *UserController) Delete(ctx echo.Context) error {

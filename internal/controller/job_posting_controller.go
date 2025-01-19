@@ -29,5 +29,16 @@ func (c *JobPostingController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, posting)
+	response := &dto.JobPostingResponse{
+		ID:          posting.ID.String(),
+		ProjectID:   posting.ProjectID.String(),
+		Title:       posting.Title,
+		Description: posting.Description.String,
+		Status:      posting.Status.String(),
+		Deadline:    posting.Deadline.Time,
+		CreatedAt:   posting.CreatedAt.Time,
+		UpdatedAt:   posting.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

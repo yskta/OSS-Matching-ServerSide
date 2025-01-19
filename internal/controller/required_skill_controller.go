@@ -29,5 +29,14 @@ func (c *RequiredSkillController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, skill)
+	response := &dto.RequiredSkillResponse{
+		ID:           skill.ID.String(),
+		JobPostingID: skill.JobPostingID.String(),
+		Name:         skill.Name,
+		Level:        skill.Level.String,
+		CreatedAt:    skill.CreatedAt.Time,
+		UpdatedAt:    skill.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

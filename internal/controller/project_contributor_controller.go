@@ -29,5 +29,15 @@ func (c *ProjectContributorController) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, contributor)
+	// DBモデルからDTOのレスポンス型に変換
+	response := &dto.ProjectContributorResponse{
+		ProjectID:           contributor.ProjectID.String(),
+		UserID:              contributor.UserID.String(),
+		Role:                contributor.Role,
+		CanManageJobPosting: contributor.CanManageJobPosting.Bool,
+		CreatedAt:           contributor.CreatedAt.Time,
+		UpdatedAt:           contributor.UpdatedAt.Time,
+	}
+
+	return ctx.JSON(http.StatusCreated, response)
 }

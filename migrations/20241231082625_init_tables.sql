@@ -62,6 +62,8 @@ CREATE TABLE job_applications(
     job_posting_id UUID NOT NULL,
     user_id UUID NOT NULL,
     status job_application_status NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (job_posting_id, user_id),
     FOREIGN KEY (job_posting_id) REFERENCES job_postings(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
