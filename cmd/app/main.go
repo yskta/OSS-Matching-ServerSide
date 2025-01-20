@@ -1,3 +1,8 @@
+// @title OSS Matching API
+// @version 1.0
+// @description API for OSS Matching Service
+// @host localhost:8080
+// @BasePath /api
 package main
 
 import (
@@ -9,9 +14,11 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	_ "OSS-Matching-ServerSide/docs"
 	"OSS-Matching-ServerSide/internal/config"
 	"OSS-Matching-ServerSide/internal/controller"
 	"OSS-Matching-ServerSide/internal/repository"
@@ -88,6 +95,9 @@ func main() {
 	// ミドルウェアの設定
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+	// Swaggerのエンドポイントを追加
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// ルートハンドラー
 	e.GET("/health", func(c echo.Context) error {
