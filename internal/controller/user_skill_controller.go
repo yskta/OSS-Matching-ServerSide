@@ -18,6 +18,16 @@ func NewUserSkillController(uss service.UserSkillService) *UserSkillController {
 	}
 }
 
+// @Summary Create a new user skill
+// @Description Create a new user skill with user ID, name, and level
+// @Tags user_skills
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateUserSkillRequest true "User skill creation request"
+// @Success 201 {object} dto.UserSkillResponse
+// @Failure 400 {object} echo.HTTPError "Invalid request"
+// @Failure 500 {object} echo.HTTPError "Server error"
+// @Router /user_skills [post]
 func (c *UserSkillController) Create(ctx echo.Context) error {
 	req := new(dto.CreateUserSkillRequest)
 	if err := ctx.Bind(req); err != nil {

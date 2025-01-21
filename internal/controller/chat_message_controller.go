@@ -18,6 +18,16 @@ func NewChatMessageController(cms service.ChatMessageService) *ChatMessageContro
 	}
 }
 
+// @Summary Create a new chat message
+// @Description Create a new chat message with job application ID, sender ID, and content
+// @Tags chat_messages
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateChatMessageRequest true "Chat message creation request"
+// @Success 201 {object} dto.ChatMessageResponse
+// @Failure 400 {object} echo.HTTPError "Invalid request"
+// @Failure 500 {object} echo.HTTPError "Server error"
+// @Router /chat_messages [post]
 func (c *ChatMessageController) Create(ctx echo.Context) error {
 	req := new(dto.CreateChatMessageRequest)
 	if err := ctx.Bind(req); err != nil {

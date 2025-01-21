@@ -18,6 +18,16 @@ func NewProjectContributorController(pcs service.ProjectContributorService) *Pro
 	}
 }
 
+// @Summary Create a new project contributor
+// @Description Create a new project contributor with user ID and role
+// @Tags project_contributors
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateProjectContributorRequest true "Project contributor creation request"
+// @Success 201 {object} dto.ProjectContributorResponse
+// @Failure 400 {object} echo.HTTPError "Invalid request"
+// @Failure 500 {object} echo.HTTPError "Server error"
+// @Router /project_contributors [post]
 func (c *ProjectContributorController) Create(ctx echo.Context) error {
 	req := new(dto.CreateProjectContributorRequest)
 	if err := ctx.Bind(req); err != nil {
