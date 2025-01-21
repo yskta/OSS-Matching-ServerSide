@@ -18,6 +18,16 @@ func NewRequiredSkillController(rss service.RequiredSkillService) *RequiredSkill
 	}
 }
 
+// @Summary Create a new required skill
+// @Description Create a new required skill with job posting ID, name, and level
+// @Tags required_skills
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateRequiredSkillRequest true "Required skill creation request"
+// @Success 201 {object} dto.RequiredSkillResponse
+// @Failure 400 {object} echo.HTTPError "Invalid request"
+// @Failure 500 {object} echo.HTTPError "Server error"
+// @Router /required_skills [post]
 func (c *RequiredSkillController) Create(ctx echo.Context) error {
 	req := new(dto.CreateRequiredSkillRequest)
 	if err := ctx.Bind(req); err != nil {

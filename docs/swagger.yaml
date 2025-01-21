@@ -1,5 +1,73 @@
 basePath: /api
 definitions:
+  OSS-Matching-ServerSide_internal_controller_dto.ChatMessageResponse:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_read:
+        type: boolean
+      job_application_id:
+        type: string
+      sender_id:
+        type: string
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.CreateChatMessageRequest:
+    properties:
+      content:
+        type: string
+      job_application_id:
+        type: string
+      sender_id:
+        type: string
+    required:
+    - content
+    - job_application_id
+    - sender_id
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.CreateJobApplicationRequest:
+    properties:
+      job_posting_id:
+        type: string
+      user_id:
+        type: string
+    required:
+    - job_posting_id
+    - user_id
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.CreateJobPostingRequest:
+    properties:
+      deadline:
+        type: string
+      description:
+        type: string
+      project_id:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    required:
+    - project_id
+    - status
+    - title
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.CreateProjectContributorRequest:
+    properties:
+      project_id:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    required:
+    - project_id
+    - role
+    - user_id
+    type: object
   OSS-Matching-ServerSide_internal_controller_dto.CreateProjectRequest:
     properties:
       description:
@@ -10,6 +78,18 @@ definitions:
         type: string
     required:
     - github_repo_id
+    - name
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.CreateRequiredSkillRequest:
+    properties:
+      job_posting_id:
+        type: string
+      level:
+        type: string
+      name:
+        type: string
+    required:
+    - job_posting_id
     - name
     type: object
   OSS-Matching-ServerSide_internal_controller_dto.CreateUserRequest:
@@ -25,6 +105,67 @@ definitions:
     - github_id
     - name
     type: object
+  OSS-Matching-ServerSide_internal_controller_dto.CreateUserSkillRequest:
+    properties:
+      level:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: string
+    required:
+    - name
+    - user_id
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.JobApplicationResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      job_posting_id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.JobPostingResponse:
+    properties:
+      created_at:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      project_id:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.ProjectContributorResponse:
+    properties:
+      can_manage_job_posting:
+        type: boolean
+      created_at:
+        type: string
+      project_id:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
   OSS-Matching-ServerSide_internal_controller_dto.ProjectResponse:
     properties:
       created_at:
@@ -37,6 +178,21 @@ definitions:
         type: string
       is_active:
         type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  OSS-Matching-ServerSide_internal_controller_dto.RequiredSkillResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      job_posting_id:
+        type: string
+      level:
+        type: string
       name:
         type: string
       updated_at:
@@ -76,6 +232,21 @@ definitions:
       updated_at:
         type: string
     type: object
+  OSS-Matching-ServerSide_internal_controller_dto.UserSkillResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      level:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
   echo.HTTPError:
     properties:
       message: {}
@@ -87,6 +258,129 @@ info:
   title: OSS Matching API
   version: "1.0"
 paths:
+  /chat_messages:
+    post:
+      consumes:
+      - application/json
+      description: Create a new chat message with job application ID, sender ID, and
+        content
+      parameters:
+      - description: Chat message creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.CreateChatMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.ChatMessageResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Create a new chat message
+      tags:
+      - chat_messages
+  /job_applications:
+    post:
+      consumes:
+      - application/json
+      description: Create a new job application with job posting ID, user ID, and
+        message
+      parameters:
+      - description: Job application creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.CreateJobApplicationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.JobApplicationResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Create a new job application
+      tags:
+      - job_applications
+  /job_postings:
+    post:
+      consumes:
+      - application/json
+      description: Create a new job posting with project ID, title, description, status,
+        and deadline
+      parameters:
+      - description: Job posting creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.CreateJobPostingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.JobPostingResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Create a new job posting
+      tags:
+      - job_postings
+  /project_contributors:
+    post:
+      consumes:
+      - application/json
+      description: Create a new project contributor with user ID and role
+      parameters:
+      - description: Project contributor creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.CreateProjectContributorRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.ProjectContributorResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Create a new project contributor
+      tags:
+      - project_contributors
   /projects:
     post:
       consumes:
@@ -221,6 +515,66 @@ paths:
       summary: Update project
       tags:
       - projects
+  /required_skills:
+    post:
+      consumes:
+      - application/json
+      description: Create a new required skill with job posting ID, name, and level
+      parameters:
+      - description: Required skill creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.CreateRequiredSkillRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.RequiredSkillResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Create a new required skill
+      tags:
+      - required_skills
+  /user_skills:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user skill with user ID, name, and level
+      parameters:
+      - description: User skill creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.CreateUserSkillRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/OSS-Matching-ServerSide_internal_controller_dto.UserSkillResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Create a new user skill
+      tags:
+      - user_skills
   /users:
     post:
       consumes:
