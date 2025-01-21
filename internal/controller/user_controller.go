@@ -19,6 +19,16 @@ func NewUserController(us service.UserService) *UserController {
 	}
 }
 
+// @Summary Create a new user
+// @Description Create a new user with GitHub account
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateUserRequest true "User creation request"
+// @Success 201 {object} dto.UserResponse
+// @Failure 400 {object} echo.HTTPError "Invalid request"
+// @Failure 500 {object} echo.HTTPError "Server error"
+// @Router /users [post]
 func (c *UserController) Create(ctx echo.Context) error {
 	req := new(dto.CreateUserRequest)
 	// リクエストボディのJSONをGo構造体にマッピング
@@ -44,6 +54,17 @@ func (c *UserController) Create(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, response)
 }
 
+// @Summary Get a user by ID
+// @Description Get a user's detailed information by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID" format(uuid)
+// @Success 200 {object} dto.UserResponse
+// @Failure 400 {object} echo.HTTPError "Invalid ID format"
+// @Failure 404 {object} echo.HTTPError "User not found"
+// @Failure 500 {object} echo.HTTPError "Server error"
+// @Router /users/{id} [get]
 func (c *UserController) Get(ctx echo.Context) error {
 	// 文字列のIDをUUIDに変換
 	id, err := uuid.Parse(ctx.Param("id"))
@@ -69,6 +90,18 @@ func (c *UserController) Get(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response)
 }
 
+// @Summary Update user
+// @Description Update user information
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID" format(uuid)
+// @Param request body dto.UpdateUserRequest true "User update request"
+// @Success 200 {object} dto.UserResponse
+// @Failure 400 {object} echo.HTTPError "Invalid request format or ID"
+// @Failure 404 {object} echo.HTTPError "User not found"
+// @Failure 500 {object} echo.HTTPError "Server error"
+// @Router /users/{id} [put]
 func (c *UserController) Update(ctx echo.Context) error {
 	// 文字列のIDをUUIDに変換
 	id, err := uuid.Parse(ctx.Param("id"))
@@ -99,6 +132,17 @@ func (c *UserController) Update(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response)
 }
 
+// @Summary Delete user
+// @Description Delete a user by ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID" format(uuid)
+// @Success 204 "No Content"
+// @Failure 400 {object} echo.HTTPError "Invalid ID format"
+// @Failure 404 {object} echo.HTTPError "User not found"
+// @Failure 500 {object} echo.HTTPError "Server error"
+// @Router /users/{id} [delete]
 func (c *UserController) Delete(ctx echo.Context) error {
 	// 文字列のIDをUUIDに変換
 	id, err := uuid.Parse(ctx.Param("id"))
