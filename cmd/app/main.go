@@ -95,6 +95,11 @@ func main() {
 	// ミドルウェアの設定
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000"}, // フロントエンドのURL
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 
 	// Swaggerのエンドポイントを追加
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
